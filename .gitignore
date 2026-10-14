@@ -4,3 +4,5 @@ data/*.db
 data/*.db-*
 .DS_Store
 prompt.txt
+docs/PROJECT-GUIDE.md
+docs/video-outline.md
