@@ -5,7 +5,7 @@ import type { Finding, ProposedChange } from '../../shared/types.ts';
 import { areaForLine } from '../../shared/types.ts';
 import {
   type Check, type CheckCtx, available, docAvailable, docText, pageText, evOf, num, parseMoney, lots, inCaResidency,
-  longTerm, detectedAt, similarity, lineNum, oursNum,
+  longTerm, detectedAt, similarity, containment, lineNum, oursNum,
 } from './ctx.ts';
 
 const f = (x: Omit<Finding, 'source'> & { source?: Finding['source'] }): Finding => ({ source: 'check', ...x });
@@ -210,7 +210,7 @@ const duplicatePage: Check = {
         const a = d.pages[i];
         const b = d.pages[j];
         if (!/\d{2,}/.test(a.printed_content)) continue;
-        if (similarity(a.printed_content, b.printed_content) < 0.9) continue;
+        if (containment(a.printed_content, b.printed_content) < 0.97 || tokens2(a.printed_content) < 20) continue;
         for (const l of ctx.base.lines) {
           const srcs = l.sources.map((s) => ctx.P.ev.get(s)).filter(Boolean);
           const fromA = srcs.filter((e) => e!.document_id === d.id && e!.page === a.page);
@@ -230,7 +230,7 @@ const duplicatePage: Check = {
             kind: 'error',
             title: `${d.title}: page ${b.page} is a second scan of page ${a.page}`,
             summary: `${l.key} (${l.label}) adds page totals from both pages: ${money(l.value)} should be ${money(correct)}.`,
-            detail: [`Page ${a.page} and page ${b.page} content similarity ${(similarity(a.printed_content, b.printed_content) * 100).toFixed(0)}%.`, b.printed_content.slice(0, 140) + '…'],
+            detail: [`Every entry on page ${a.page} reappears on page ${b.page} (${(containment(a.printed_content, b.printed_content) * 100).toFixed(0)}% of its content; similarity ${(similarity(a.printed_content, b.printed_content) * 100).toFixed(0)}%).`, b.printed_content.slice(0, 140) + '…'],
             area: areaForLine(l.key),
             severity: 'medium',
             blocksFiling: true,
@@ -1253,7 +1253,7 @@ const electionOpportunity: Check = {
         area: 'business',
         severity: 'medium',
         blocksFiling: false,
-        evidence: [...new Set(a.changed_lines.flatMap((c: any) => ctx.lines.get(c.key)?.sources ?? []).filter((x: string) => x.startsWith('ev-')))],
+        evidence: [...new Set<string>(a.changed_lines.flatMap((c: any) => ctx.lines.get(c.key)?.sources ?? []).filter((x: string) => x.startsWith('ev-')))],
         lines: a.changed_lines.slice(0, 3).map((c: any) => c.key),
         proposed: a.changed_lines.filter((c: any) => /^(F4562|SchCA540NR\.12\.C|FTB3885A)/.test(c.key)).map((c: any) => ({ target: c.key, value: c.new })),
         whatIf: a.id,
@@ -1370,4 +1370,8 @@ export function basisChain(ctx: CheckCtx, lateK1?: string): string {
 
 function engagementLetter(ctx: CheckCtx): string[] {
   return [...ctx.P.docs.values()].filter((d) => d.document_type === 'engagement_letter').map((d) => d.id);
+}
+
+function tokens2(s: string): number {
+  return s.split(/s+/).length;
 }

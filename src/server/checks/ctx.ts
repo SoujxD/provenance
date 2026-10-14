@@ -119,3 +119,12 @@ export function similarity(a: string, b: string): number {
   for (const t of A) if (B.has(t)) inter++;
   return inter / Math.max(1, A.size + B.size - inter);
 }
+
+/** Share of the smaller page's tokens found in the other page: 1.0 when one page is a re-scan of the other plus an annotation. */
+export function containment(a: string, b: string): number {
+  const A = tokens(a);
+  const B = tokens(b);
+  let inter = 0;
+  for (const t of A) if (B.has(t)) inter++;
+  return inter / Math.max(1, Math.min(A.size, B.size));
+}

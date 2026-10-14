@@ -13,8 +13,8 @@
     "dev:client": "vite",
     "build": "vite build",
     "start": "node --disable-warning=ExperimentalWarning src/server/index.ts",
-    "test": "node --disable-warning=ExperimentalWarning --test tests/",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "test": "node --disable-warning=ExperimentalWarning --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.client.json"
   },
   "dependencies": {
     "react": "^19.2.0",

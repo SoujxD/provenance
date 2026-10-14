@@ -337,7 +337,9 @@ function plan(ctx: Ctx, cmd: any): NewEvent[] {
       const findings = allFindings(s, ours, ctx.at);
       const sos = signoffViews(s, ours, findings);
       const st = steps(s, ours, findings, sos).filter((x) => x.step !== 'Client approval and e-file authorization');
-      const g = gate(s, ours, findings, sos, st);
+      const g0 = gate(s, ours, findings, sos, st);
+      const g = { ...g0, blockers: g0.blockers.filter((b) => !(b.kind === 'finding' && String(b.ref).startsWith('EFILE:'))) };
+      g.ready = g.blockers.length === 0;
       if (!g.ready) throw new Conflict(`Not ready to send for approval (${g.blockers.length} open): ${g.blockers.slice(0, 4).map((b) => b.text).join(' · ')}`);
       const summary = clientSummary(ours);
       out.push(ev(ctx, 'filing.approval_requested', { hash: hashContent(summary), summary }, 'return'));

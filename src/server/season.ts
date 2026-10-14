@@ -103,5 +103,10 @@ export function seasonNow(s: State): string {
   let t = Date.parse(s.clock) + elapsed;
   const next = scriptItems().find((i) => !s.scriptApplied.has(i.id));
   if (next) t = Math.min(t, Date.parse(next.at) - 60_000);
-  return new Date(Math.max(t, Date.parse(s.clock))).toISOString();
+  return isoSeconds(Math.max(t, Date.parse(s.clock)));
+}
+
+/** Season times use the packet's format (whole seconds, no milliseconds) so they compare correctly as strings. */
+export function isoSeconds(t: number | string): string {
+  return new Date(t).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }

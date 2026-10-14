@@ -6,7 +6,7 @@ import type { State, Signoff } from './state.ts';
 import { fold } from './state.ts';
 import { loadEvents, canonical, sha256 } from './events.ts';
 import { people, person, isActive, type Person } from './access.ts';
-import { nextScript, scriptItems, seasonNow } from './season.ts';
+import { nextScript, scriptItems, seasonNow, isoSeconds } from './season.ts';
 import { AREAS, areaForLine, type Finding, type ProposedChange, type ReturnVersion, type TaxEffect, type Adjustment } from '../shared/types.ts';
 
 const models = new Map<string, LineModel>();
@@ -301,7 +301,10 @@ export type SignoffView = Signoff & { valid: boolean; changes: string[]; actorNa
 
 export function signoffViews(s: State, ours: Ours, findings: Finding[]): SignoffView[] {
   const cache = new Map<string, any>();
-  return s.signoffs.filter((x) => !x.withdrawn).map((so) => {
+  // Only the latest sign-off per scope and level counts; earlier ones are superseded (still in the log).
+  const latest = new Map<string, Signoff>();
+  for (const so of s.signoffs) if (!so.withdrawn) latest.set(`${so.scope}|${so.level}`, so);
+  return [...latest.values()].map((so) => {
     if (!cache.has(so.scope)) cache.set(so.scope, scopeContent(s, ours, findings, so.scope));
     const cur = cache.get(so.scope);
     const valid = hashContent(cur) === so.hash;
@@ -529,8 +532,9 @@ const viewCache = new Map<string, any>();
 export function deriveView(ws: string, viewerId: string, asOfParam?: string) {
   const live = stateFor(ws);
   const now = seasonNow(live);
-  const asOf = asOfParam && asOfParam < now ? asOfParam : now;
-  const isReplay = !!asOfParam && asOfParam < live.clock;
+  const asOfNorm = asOfParam ? isoSeconds(asOfParam) : undefined;
+  const asOf = asOfNorm && asOfNorm < now ? asOfNorm : now;
+  const isReplay = !!asOfNorm && asOfNorm < live.clock;
   const key = `${ws}|${live.head.seq}|${viewerId}|${isReplay ? asOf : 'live'}`;
   const hit = viewCache.get(key);
   if (hit && !isReplay && Date.now() - hit.t < 30_000) return hit.v;
