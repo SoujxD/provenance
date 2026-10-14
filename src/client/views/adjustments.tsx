@@ -34,7 +34,7 @@ export function Adjustments() {
       <Panel title="All adjustments" pad={false}>
         {view.adjustments.length === 0 && <Empty>No adjustments yet. Open a finding and use “Apply suggested fix”, or trace any number and “Propose adjustment”.</Empty>}
         <table className="t">
-          {view.adjustments.length > 0 && <thead><tr><th /><th>ID</th><th>Change</th><th>Reason</th><th>Effect</th><th>Status</th><th>By</th><th /></tr></thead>}
+          {view.adjustments.length > 0 && <thead><tr><th><input type="checkbox" aria-label="Select all pending" checked={picked.size > 0 && view.adjustments.filter((a: any) => a.status === 'pending').every((a: any) => picked.has(a.id))} onChange={(e) => setPicked(e.target.checked ? new Set(view.adjustments.filter((a: any) => a.status === 'pending').map((a: any) => a.id)) : new Set())} /></th><th>ID</th><th>Change</th><th>Reason</th><th>Effect</th><th>Status</th><th>By</th><th /></tr></thead>}
           <tbody>
             {[...view.adjustments].reverse().map((a: any) => (
               <tr key={a.id} style={['rejected', 'reverted'].includes(a.status) ? { opacity: 0.55 } : undefined}>

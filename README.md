@@ -10,7 +10,8 @@ A working workpaper for the Okafor-Lindqvist 2025 return (Form 1040 + California
 | [docs/errors-found.md](docs/errors-found.md) | Each packet error → how the design surfaced it → evidence → fed/CA effect → resolution |
 | [docs/APPROACH.md](docs/APPROACH.md) | How I framed the problem, key decisions with alternatives, what I cut, what's next |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Timestamped decision log kept while building |
-| [docs/video-outline.md](docs/video-outline.md) | The 5–7 minute demo script |
+| [docs/video-outline.md](docs/video-outline.md) | The demo video script, click by click |
+| [docs/PROJECT-GUIDE.md](docs/PROJECT-GUIDE.md) | Plain-English guide to every folder, file and page |
 
 ## Try it
 
