@@ -76,7 +76,10 @@ export class LineModel {
     if (l.rule === 'R-CARRY') {
       if (l.inputs.length <= 1) return l.inputs.map((k) => ({ key: k, c: 1 }));
       const match = l.inputs.find((k) => this.num(k) === l.value);
-      return match ? [{ key: match, c: 1 }] : [];
+      if (match) return [{ key: match, c: 1 }];
+      // Some "carries" are really sums of their inputs (e.g. Schedule D line 10 = boxes F + K).
+      const sum = l.inputs.reduce((s, k) => s + (this.num(k) ?? NaN), 0);
+      return Math.abs(sum - Number(l.value)) <= 1.01 ? l.inputs.map((k) => ({ key: k, c: 1 })) : [];
     }
     if (l.rule !== 'R-SUM' && l.rule !== 'R-CA-ITEMIZED') return [];
     const vals = l.inputs.map((k) => this.num(k));

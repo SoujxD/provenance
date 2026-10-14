@@ -1,0 +1,14 @@
+# Render Blueprint: New → Blueprint → this repo. The disk keeps the SQLite event log across deploys.
+services:
+  - type: web
+    name: miraflores-workpaper
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATA_DIR
+        value: /data
+    disk:
+      name: workpaper-data
+      mountPath: /data
+      sizeGB: 1
