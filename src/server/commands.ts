@@ -106,7 +106,7 @@ function plan(ctx: Ctx, cmd: any): NewEvent[] {
         } else if (c.target.startsWith('label:')) original = ours.model.lines.get(c.target.slice(6))?.label ?? null;
         else if (ours.values.has(c.target)) original = ours.values.get(c.target) ?? null;
         else if (!c.addTo) throw new BadRequest(`Unknown line ${c.target}. New lines need the total they add to.`);
-        const value = typeof original === 'number' || c.addTo ? Number(c.value) : c.value;
+        const value = typeof original === 'number' || c.addTo ? Number(c.value) : unmaskToken(c.value);
         if (typeof value === 'number' && !Number.isFinite(value)) throw new BadRequest(`Value for ${c.target} is not a number.`);
         return { target: c.target, original, value, label: c.label, addTo: c.addTo, caSource: !!c.caSource, category: c.category };
       });
@@ -425,7 +425,7 @@ function transmit(ctx: Ctx): NewEvent[] {
   for (const p of P.household.people) {
     const onReturn = ours.facts.get(`household:${p.id}.ssn`) ?? p.ssn;
     if (onReturn !== agencyTin(p.id)) {
-      const template = packetFed.flatMap((x: any) => x.errors || []).find((e: any) => /TIN/.test(e.message));
+      const template = packetFed.flatMap((x: any) => x.errors || []).find((e: any) => /identification number/i.test(e.message));
       const n = deps.findIndex((d: any) => d.id === p.id) + 1;
       errors.push({ code: template?.code ?? 'R0000-504-02', message: template ? template.message.replace(/dependent \d+: [^)]+/, `dependent ${n}: ${p.name}`) : `TIN mismatch for ${p.name}` });
     }
@@ -519,6 +519,17 @@ export function attach(ws: string, actorId: string, body: { name: string; mime: 
   append(ws, { actor: actorId, type: 'evidence.attached', subject: id, payload: { attachmentId: id, name: body.name, mime: body.mime, size: buf.length, sha256: hash, targets: body.targets || [], note: body.note || '' }, at: seasonNow(s) });
   invalidateViews(ws);
   return { ok: true, id, sha256: hash };
+}
+
+/**
+ * Responses are masked, so a value can come back from the browser as a masked token (•••-••-3390).
+ * Resolve it to the one sensitive value in the packet with that mask; refuse if that is ambiguous.
+ */
+function unmaskToken(v: unknown): unknown {
+  if (typeof v !== 'string' || !v.includes('•')) return v;
+  const hits = packet().sensitive.filter((x) => maskValue(x) === v);
+  if (hits.length === 1) return hits[0].value;
+  throw new BadRequest('That value is masked. Reveal it first (cleared staff) or type the full value.');
 }
 
 /** Ids count every event of a type, including undone ones, so an id is never reused. */

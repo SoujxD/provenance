@@ -69,7 +69,7 @@ export function Depreciation() {
 
 // ---------- Carryovers ----------
 export function Carryovers() {
-  const { packet, view } = useStore();
+  const { packet, view, cmd } = useStore();
   const ix = usePacketIndex();
   if (!ix || !view) return null;
   const cin = packet.prior_years.carryovers_into_2025;
@@ -92,7 +92,7 @@ export function Carryovers() {
       <div className="page-head"><div><h1>Carryovers & basis</h1><p>What came in from 2024 (agreed to the prior return and the prior preparer's file), what 2025 used, and what goes out to 2026.</p></div></div>
       <Panel title="Federal" pad={false}>
         <table className="t"><thead><tr><th>Item</th><th className="n">In from 2024</th><th>2025 line</th><th className="n">Out to 2026 (engine {view.baseVersion})</th><th>Verified</th></tr></thead><tbody>
-          {rows.map(([l, i, k, o]) => { const v = view.verifications.find((x: any) => x.target === k && x.type === 'agreed_to_prior_year'); return <tr key={l}><td>{l}</td><td className="n">{i == null ? <span className="muted">unknown</span> : money(i)}</td><td>{k && <><span className="mono small">{k}</span> <Num k={k} /></>}</td><td className="n">{o == null ? '—' : money(o)}</td><td>{v ? <span className="pill ok">✓ agreed to prior year</span> : k && ['SchD.6', 'SchD.14', 'F8582.1c', 'F8606.2'].includes(k) ? <span className="pill warn">to verify</span> : ''}</td></tr>; })}
+          {rows.map(([l, i, k, o]) => { const v = view.verifications.find((x: any) => x.target === k && x.type === 'agreed_to_prior_year'); return <tr key={l}><td>{l}</td><td className="n">{i == null ? <span className="muted">unknown</span> : money(i)}</td><td>{k && <><span className="mono small">{k}</span> <Num k={k} /></>}</td><td className="n">{o == null ? '—' : money(o)}</td><td>{v ? <span className="pill ok">✓ agreed to prior year</span> : k && ['SchD.6', 'SchD.14', 'F8582.1c', 'F8606.2'].includes(k) ? (readOnly(view) ? <span className="pill warn">to verify</span> : <button className="btn sm" onClick={() => cmd({ type: 'verification.record', target: k, verificationType: 'agreed_to_prior_year', note: 'Agreed to the 2024 return (D06) and the prior preparer carryover worksheet (D07 p6)' }, { success: `${k} verified` })}>Verify: agreed to prior year</button>) : ''}</td></tr>; })}
         </tbody></table>
         <div className="pb small muted">Sources: 2024 return D06 pages 6 and 9; prior preparer carryover worksheet D07 page 6. Verify each from the line's trace (“Verify → agreed to prior year”); the filing gate requires it.</div>
       </Panel>
@@ -114,7 +114,8 @@ export function Carryovers() {
 
 // ---------- Payments vs agency records ----------
 export function Payments() {
-  const { packet, view, openTrace } = useStore();
+  const { packet, view, openTrace, cmd } = useStore();
+  const verifyBtn = (k: string, note: string) => { const v = view?.verifications.find((x: any) => x.target === k && x.type === 'agreed_to_third_party_record'); return v ? <span className="pill ok">✓ agreed to agency record</span> : readOnly(view) ? null : <button className="btn sm" onClick={() => cmd({ type: 'verification.record', target: k, verificationType: 'agreed_to_third_party_record', note }, { success: `${k} verified` })}>Verify: agreed to agency record</button>; };
   const ix = usePacketIndex();
   if (!ix || !view) return null;
   const tr = packet.tax_agency_records.irs_account_transcript_2025.filter((s: any) => s.as_of <= view.meta.asOf.slice(0, 10)).at(-1);
@@ -125,7 +126,7 @@ export function Payments() {
     <div className="page">
       <div className="page-head"><div><h1>Payments vs IRS and FTB records</h1><p>Every payment on the return agreed to the taxpayer's confirmation and to the agency's own account. Client recollection is never the only source.</p></div></div>
       <div className="grid2" style={{ alignItems: 'start' }}>
-        <Panel title="Federal estimated payments" pad={false}>
+        <Panel title="Federal estimated payments" right={verifyBtn('F1040.26', 'Agreed to the IRS account transcript (code 670) and EFTPS confirmations')} pad={false}>
           <table className="t"><thead><tr><th>Date</th><th className="n">EFTPS confirmation (D67)</th><th className="n">Client said</th><th className="n">IRS transcript</th></tr></thead><tbody>
             {['2025-04-15', '2025-06-16', '2025-09-15', '2026-01-15'].map((d, i) => {
               const c = eftps[i];
@@ -137,7 +138,7 @@ export function Payments() {
           </tbody></table>
           <div className="pb small muted">Transcript as of {tr?.as_of} (pulled by the firm, D69).</div>
         </Panel>
-        <Panel title="California estimated payments" pad={false}>
+        <Panel title="California estimated payments" right={verifyBtn('F540NR.72', 'Agreed to the FTB account and Web Pay confirmations (designated year checked)')} pad={false}>
           <table className="t"><thead><tr><th>Date</th><th className="n">Web Pay (D68)</th><th>Designated year</th><th>FTB account</th></tr></thead><tbody>
             {ftb.map((e: any) => {
               const n = e.field.replace('_amount', '');

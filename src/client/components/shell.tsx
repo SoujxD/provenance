@@ -93,7 +93,7 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
       {view && (
         <div className="row small" title="Season clock: the scenario date. Advance plays the next packet timeline event.">
           <span className="muted">Season</span><b>{date(view.meta.now)}</b>
-          {next && !view.meta.isReplay && <button className="btn sm" title={view.script.blocked ?? `Next: ${next.title}`} onClick={() => cmd({ type: 'season.advance' }, { success: `Season: ${next.title}` }).catch(() => undefined)}>▸ {view.script.blocked ? 'Next (gated)' : date(next.at)}</button>}
+          {next && !view.meta.isReplay && <button className="btn sm" disabled={!!view.script.blocked} title={view.script.blocked ?? `Next: ${next.title}`} onClick={() => cmd({ type: 'season.advance' }, { success: `Season: ${next.title}` }).catch(() => undefined)}>▸ {view.script.blocked ? 'Next (gated)' : date(next.at)}</button>}
         </div>
       )}
       <Presence />

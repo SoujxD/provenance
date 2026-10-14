@@ -6,11 +6,18 @@ import { areaForLine } from '../../shared/types';
 import { lineValue, signed } from '../../shared/format';
 
 export function AreaList() {
-  const { view, go } = useStore();
+  const { view, go, cmd, toast } = useStore();
   if (!view) return null;
+  const role = view.viewer?.role;
+  const level = role === 'preparer' ? 'preparer' : ['reviewer', 'partner'].includes(role) ? 'reviewer' : null;
+  const todo = level ? view.areas.filter((a: any) => a.id !== 'filing' && (a.lines || a.total) && !a.signoffs.some((s: any) => s.level === level && s.valid)) : [];
+  const bulkSign = async () => {
+    const r = await cmd({ type: 'bulk', label: `Sign off ${todo.length} areas as ${level}`, items: todo.map((a: any) => ({ type: 'signoff', scope: `area:${a.id}`, level })) });
+    toast({ text: `${r.done} signed${r.errors.length ? `; ${r.errors.length} refused — ${r.errors[0].error}` : ''}`, kind: r.errors.length ? 'bad' : 'ok', action: { label: 'Undo', run: () => cmd({ type: 'batch.undo', batch: r.batch }, { success: 'Undone.' }) } });
+  };
   return (
     <div className="page">
-      <div className="page-head"><div><h1>Areas</h1><p>Each area is a workpaper: its lines, findings, evidence, sign-offs and time. Sign-offs reopen automatically when what was signed changes.</p></div></div>
+      <div className="page-head"><div><h1>Areas</h1><p>Each area is a workpaper: its lines, findings, evidence, sign-offs and time. Sign-offs reopen automatically when what was signed changes.</p></div><span className="spacer" />{level && todo.length > 0 && !readOnly(view) && <button className="btn primary" onClick={bulkSign}>Sign off {todo.length} areas as {level}</button>}</div>
       <div className="grid3">
         {view.areas.map((a: any) => {
           const prep = a.signoffs.find((x: any) => x.level === 'preparer');

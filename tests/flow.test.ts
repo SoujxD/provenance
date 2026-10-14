@@ -175,3 +175,15 @@ test('the whole season: fix, approve, sign, approve, e-file reject → fix → a
   assert.match(clientCopy(ws).html, /Filed and accepted/);
   assert.equal(verifyChain(ws).ok, true);
 });
+
+test('a masked value sent back by the browser resolves to the real value (masking never corrupts data)', async () => {
+  const { buildMasker, maskDeep } = await import('../src/shared/mask.ts');
+  const ws = newWs('ws-mask');
+  const mask = buildMasker(packet().sensitive);
+  const v = maskDeep(view(ws), mask); // exactly what the browser receives
+  const tin = v.findings.find((f: any) => f.id === 'TIN_CONSISTENCY:theo');
+  assert.equal(tin.proposed[0].value, '•••-••-3390');
+  run(ws, PRIYA, { type: 'adjustment.create', title: 'Theo SSN', changes: tin.proposed, reason: 'Prior-year return shows 3390', findingIds: [tin.id] });
+  const fact = view(ws).ours.facts['household:theo.ssn'];
+  assert.equal(fact, '666-74-3390');
+});

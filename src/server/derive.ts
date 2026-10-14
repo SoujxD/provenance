@@ -134,7 +134,7 @@ function engineFindings(asOf: string): Finding[] {
         ?? (d.code.includes('K1') || d.code.includes('SCORP') ? 'passthroughs' : d.code.includes('LOW_CONF') ? 'deductions' : d.code.includes('QUESTIONNAIRE') || d.code.includes('BROKER') || d.code.includes('DIGITAL') ? 'investments' : 'intake');
       out.set(d.code, {
         id: `ENGINE:${d.code}`, source: 'engine', rule: d.code, kind: d.severity === 'info' ? 'info' : 'compliance',
-        title: d.message.split(':')[0].length < 90 ? d.message.split(':')[0] : d.code.replace(/_/g, ' ').toLowerCase(),
+        title: (() => { const t = d.message.split(/[:.](s|$)/)[0]; return t.length <= 96 ? t : `${t.slice(0, 94)}…`; })(),
         summary: d.message, area, severity: d.severity === 'warning' ? 'medium' : 'info', blocksFiling: d.severity === 'warning',
         evidence: d.refs.filter((r) => !P.lines.get(v.version)!.has(r)), lines: d.refs.filter((r) => P.lines.get(v.version)!.has(r)),
         detectedAt: v.computed_at, detail: [`First reported by engine ${v.version} (${v.computed_at.slice(0, 10)}).`],

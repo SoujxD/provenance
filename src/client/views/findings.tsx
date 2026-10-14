@@ -65,10 +65,12 @@ export function Findings() {
             <option value="">Assign to…</option>{view.people.filter((p: any) => p.kind === 'staff' && p.active).map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
           <button className="btn sm" onClick={() => runBulk(`Mark ${picked.size} in progress`, [...picked].map((id) => ({ type: 'finding.status', findingId: id, status: 'in_progress' })))}>Mark in progress</button>
+          <button className="btn sm" onClick={() => { const note = prompt(`Resolution note for ${picked.size} findings (judgment calls also record their suggested authority)`); if (note) runBulk(`Resolve ${picked.size}`, pickedList.map((x: any) => ({ type: 'finding.resolve', findingId: x.id, status: 'resolved', note, authority: x.judgment ? x.authorityHint : undefined }))); }}>Resolve…</button>
+          <button className="btn sm" onClick={() => { const note = prompt(`Why no change is needed for ${picked.size} findings?`); if (note) runBulk(`Close ${picked.size} (no change)`, pickedList.map((x: any) => ({ type: 'finding.resolve', findingId: x.id, status: 'no_change', note, authority: x.judgment ? x.authorityHint : undefined }))); }}>No change…</button>
           <button className="btn sm ghost" onClick={() => setPicked(new Set())}>Clear</button>
         </div>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 44%) 1fr', gap: 12, alignItems: 'start' }}>
+      <div className="findings-grid">
         <div className="panel" style={{ maxHeight: 'calc(100vh - 230px)', overflow: 'auto' }}>
           <div className="row small muted" style={{ padding: '6px 10px', borderBottom: '1px solid var(--line-2)' }}>
             <input type="checkbox" checked={list.length > 0 && list.every((x: any) => picked.has(x.id))} onChange={(e) => setPicked(e.target.checked ? new Set(list.map((x: any) => x.id)) : new Set())} aria-label="Select all" />

@@ -12,7 +12,7 @@ import { Timeline, Filing, Notice, Rollforward } from './views/season';
 import { People, Admin, Portal } from './views/firm';
 
 export function App() {
-  const { view, packet, route, actor } = useStore();
+  const { view, packet, route } = useStore();
   if (!view || !packet) return <div className="empty" style={{ paddingTop: '30vh' }}>Loading the workpaper…</div>;
   const page = route[0]?.split('?')[0] || 'overview';
   if (view.viewer?.kind === 'client') {
@@ -34,7 +34,7 @@ export function App() {
       <Shell>{views[page] ?? <Overview />}</Shell>
       <TraceDrawer />
       <Toasts />
-      <Tour key={actor === 'st-04' ? 'm' : 'x'} />
+      <Tour />
     </>
   );
 }

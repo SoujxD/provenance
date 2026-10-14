@@ -233,3 +233,18 @@ label.f { display: flex; flex-direction: column; gap: 4px; font-weight: 550; fon
 
 @media (max-width: 860px) { #menubtn { display: inline-flex !important; } }
 .searchbox > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .topbar { gap: 8px; padding: 0 10px; }
+  .topbar > .row.small, .searchbox .kbd, .brand > span:last-child { display: none; }
+  .searchbox { min-width: 0; }
+  .chip .small .muted { display: none; }
+  .main { overflow-x: hidden; }
+  .panel { overflow-x: auto; }
+  .grid2 > *, .grid3 > *, .grid4 > * { min-width: 0; }
+  .page-head { flex-wrap: wrap; }
+  .tour { left: 12px; right: 12px; width: auto; }
+  .drawer { width: 100vw; }
+}
+.findings-grid { display: grid; grid-template-columns: minmax(360px, 44%) minmax(0, 1fr); gap: 12px; align-items: start; }
+@media (max-width: 960px) { .findings-grid { grid-template-columns: minmax(0, 1fr); } }
