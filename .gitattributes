@@ -1,0 +1,3 @@
+# The packet must stay byte-for-byte as delivered (its sha256 is recorded in every workspace).
+okafor_lindqvist_2025_packet.json binary
+* text=auto eol=lf
