@@ -1,0 +1,31 @@
+{
+  "name": "miraflores-workpaper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web-native tax workpaper for the Okafor-Lindqvist 2025 return: a provenance graph plus an append-only event log.",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:server": "node --disable-warning=ExperimentalWarning --watch src/server/index.ts",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "node --disable-warning=ExperimentalWarning src/server/index.ts",
+    "test": "node --disable-warning=ExperimentalWarning --test tests/",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.0"
+  }
+}
