@@ -16,7 +16,6 @@ COPY package.json ./
 # The packet, byte-for-byte as delivered (its sha256 is recorded in every workspace).
 COPY okafor_lindqvist_2025_packet.json ./
 RUN mkdir -p /data
-VOLUME ["/data"]
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s CMD node -e "fetch('http://localhost:8080/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["node", "--disable-warning=ExperimentalWarning", "src/server/index.ts"]
