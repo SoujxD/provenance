@@ -248,3 +248,4 @@ label.f { display: flex; flex-direction: column; gap: 4px; font-weight: 550; fon
 }
 .findings-grid { display: grid; grid-template-columns: minmax(360px, 44%) minmax(0, 1fr); gap: 12px; align-items: start; }
 @media (max-width: 960px) { .findings-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 860px) { .tourbtn { display: none; } }

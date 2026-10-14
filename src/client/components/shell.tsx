@@ -96,6 +96,7 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
           {next && !view.meta.isReplay && <button className="btn sm" disabled={!!view.script.blocked} title={view.script.blocked ?? `Next: ${next.title}`} onClick={() => cmd({ type: 'season.advance' }, { success: `Season: ${next.title}` }).catch(() => undefined)}>▸ {view.script.blocked ? 'Next (gated)' : date(next.at)}</button>}
         </div>
       )}
+      <button className="btn sm tourbtn" title="Restart the 60-second guided tour" onClick={() => { try { localStorage.removeItem('wp.tour'); } catch { /* ignore */ } window.dispatchEvent(new Event('wp:tour')); }}>Start here</button>
       <Presence />
       <Bell />
       <RoleSwitcher />

@@ -14,7 +14,7 @@ A working workpaper for the Okafor-Lindqvist 2025 return (Form 1040 + California
 
 ## Try it
 
-Open the deployed link (see the bottom of this file). Each visitor gets a private workspace at `/w/<id>`; share that URL to collaborate live (open it in two browsers as two different people). A 60-second **Start here** tour runs on first load: trace a number → see a finding → switch role. `Ctrl/⌘ K` searches everything.
+Open **https://provenance-production-7756.up.railway.app**. Each visitor gets a private workspace at `/w/<id>`; share that URL to collaborate live (open it in two browsers as two different people). A 60-second **Start here** tour runs on first load: trace a number → see a finding → switch role. `Ctrl/⌘ K` searches everything.
 
 - **Role switcher** (top right): Priya (preparer), Daniel (reviewer), Helen (partner), Marcus (preparer, no clearance → masked), Jo (firm administrator), Sam (quality reviewer, inactive until 2027-01-04), and the clients Ngozi and Erik (client portal). It stands in for sign-in; every rule is enforced on the server.
 - **Season clock**: the workpaper opens on 2026-06-23 (engine v3 is current, per the packet README). "Advance" plays the packet timeline; client approval and e-file are gates only real in-app actions can pass. Nothing is seeded — no reviews, sign-offs or answers.
@@ -73,4 +73,4 @@ tests/           checks.test.ts · events.test.ts · flow.test.ts
 
 ## Deployed URL
 
-_To be filled in after `fly deploy` (or Render/Railway)._
+**https://provenance-production-7756.up.railway.app** — opens a fresh private workspace with the 60-second "Start here" tour (bottom-right; restart it any time from the **Start here** button in the top bar). Health: `/api/health`.
