@@ -42,7 +42,7 @@ function parseRoute(): string[] {
 export function StoreProvider({ ws, children }: { ws: string; children: ReactNode }) {
   const [packet, setPacket] = useState<any>(null);
   const [view, setView] = useState<any>(null);
-  const [actor, setActorState] = useState<string>(() => { try { return localStorage.getItem('wp.actor') || 'st-01'; } catch { return 'st-01'; } });
+  const [actor, setActorState] = useState<string>(() => { try { return sessionStorage.getItem('wp.actor') || 'st-01'; } catch { return 'st-01'; } });
   const [asOf, setAsOf] = useState<string | null>(null);
   const [trace, setTrace] = useState<TraceTarget[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -93,7 +93,7 @@ export function StoreProvider({ ws, children }: { ws: string; children: ReactNod
   const setActor = useCallback((a: string) => {
     setActorState(a);
     setRevealed({});
-    try { localStorage.setItem('wp.actor', a); } catch { /* ignore */ }
+    try { sessionStorage.setItem('wp.actor', a); } catch { /* ignore */ }
   }, []);
 
   const cmd = useCallback(async (body: any, opts: { quiet?: boolean; success?: string } = {}) => {
