@@ -27,7 +27,7 @@ npm install
 npm run dev          # API on :8787 (watch) + Vite on :5173 → open http://localhost:5173
 # or production-style:
 npm run build && npm start   # → http://localhost:8787
-npm test             # 37 tests: every check on the real packet issues, the event log, a full-season flow
+npm test             # 38 tests: every check on the real packet issues, the event log, a full-season flow
 npm run typecheck
 ```
 
@@ -69,6 +69,10 @@ src/client/      React app: overview, findings inbox, areas, trace drawer, docum
                  & what-if, versions, records, timeline replay, filing, notice, roll-forward, people, admin, portal
 tests/           checks.test.ts · events.test.ts · flow.test.ts
 ```
+
+## How this was built
+
+The design is mine: framing the workpaper as a provenance graph plus an append-only event log, the data model, the tradeoffs in [docs/APPROACH.md](docs/APPROACH.md), and the decisions in [docs/DECISIONS.md](docs/DECISIONS.md). I wrote the code with Claude (an AI coding assistant) working under my direction. I reviewed it, ran and checked the test suite, and verified the app end to end in the browser, including every packet error in [docs/errors-found.md](docs/errors-found.md) and the full filing season on the deployed site.
 
 ## Deployed URL
 
